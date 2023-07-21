@@ -1,0 +1,27 @@
+--- src/mpi/comm/contextid.c
++++ src/mpi/comm/contextid.c
+@@ -468,12 +468,24 @@ int MPIR_Get_contextid_sparse_group(MPIR_Comm * comm_ptr, MPIR_Group * group_ptr
+          */
+         if (group_ptr != NULL) {
+             int coll_tag = tag | MPIR_TAG_COLL_BIT;     /* Shift tag into the tagged coll space */
++#ifdef UTF_DEBUG_20201229
++	    fprintf(stderr, "%s YI TOFU 20201228 coll_tag(0x%x) calling Allreduce_group\n", __func__, coll_tag);
++#endif
+             mpi_errno = MPII_Allreduce_group(MPI_IN_PLACE, st.local_mask, MPIR_MAX_CONTEXT_MASK + 1,
+                                              MPI_INT, MPI_BAND, comm_ptr, group_ptr, coll_tag,
+                                              &errflag);
++#ifdef UTF_DEBUG_20201229
++	    fprintf(stderr, "%s YI TOFU 20201228 return mpi_errno(%d)\n", __func__, mpi_errno);
++#endif
+         } else {
++#ifdef UTF_DEBUG_20201229
++	    fprintf(stderr, "%s YI TOFU 20201228 calling Allreduce\n", __func__);
++#endif
+             mpi_errno = MPIR_Allreduce(MPI_IN_PLACE, st.local_mask, MPIR_MAX_CONTEXT_MASK + 1,
+                                        MPI_INT, MPI_BAND, comm_ptr, &errflag);
++#ifdef UTF_DEBUG_20201229
++	    fprintf(stderr, "%s YI TOFU 20201228 return mpi_errno(%d)\n", __func__, mpi_errno);
++#endif
+         }
+         MPIR_ERR_CHECK(mpi_errno);
+         MPIR_ERR_CHKANDJUMP(errflag, mpi_errno, MPI_ERR_OTHER, "**coll_fail");

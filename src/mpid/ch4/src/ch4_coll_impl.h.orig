@@ -673,33 +673,16 @@ MPL_STATIC_INLINE_PREFIX int MPIDI_Reduce_intra_composition_alpha(const void *se
         }
         /* recvbuf becomes the sendbuf for internode reduce */
         inter_sendbuf = recvbuf;
-	// fprintf(stderr, "YI %s inter_sendbuf = recvbuf = %p\n", __func__, recvbuf);
     } else {
         inter_sendbuf = (sendbuf == MPI_IN_PLACE) ? recvbuf : sendbuf;
-	// fprintf(stderr, "YI %s inter_sendbuf = %p\n", __func__, inter_sendbuf);
     }
 
     /* internode reduce with rank 0 in node_roots_comm as the root */
     if (comm->node_roots_comm != NULL) {
-//#define TOFU 20201230 checking again
-#ifdef TOFU_COLL
-	fprintf(stderr, "YI CHANGED %s ==> calling MPIDI_NM_mpi_reduce comm->node_roots_comm->rank(%d) in %s\n", __func__, comm->node_roots_comm->rank, __FILE__);
-	if (inter_sendbuf == recvbuf && comm->node_roots_comm->rank == 0) {
-	    mpi_errno =
-		MPIDI_NM_mpi_reduce(MPI_IN_PLACE,
-                                recvbuf, count, datatype, op, 0, comm->node_roots_comm, errflag);
-	} else {
-	    mpi_errno =
-		MPIDI_NM_mpi_reduce(inter_sendbuf,
-                                recvbuf, count, datatype, op, 0, comm->node_roots_comm, errflag);
-	}
-	// fprintf(stderr, "YI %s <== return from MPIDI_NM_mpi_reduce\n", __func__);
-#else
         mpi_errno =
             MPIDI_NM_mpi_reduce(comm->node_roots_comm->rank == 0 ? MPI_IN_PLACE : inter_sendbuf,
                                 recvbuf, count, datatype, op, 0, comm->node_roots_comm, errflag);
 
-#endif
         if (mpi_errno) {
             /* for communication errors, just record the error but continue */
             *errflag =

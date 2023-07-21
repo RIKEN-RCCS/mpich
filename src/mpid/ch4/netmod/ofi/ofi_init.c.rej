@@ -1,0 +1,81 @@
+--- src/mpid/ch4/netmod/ofi/ofi_init.c
++++ src/mpid/ch4/netmod/ofi/ofi_init.c
+@@ -418,6 +418,8 @@ static void host_free_registered(void *ptr)
+ 
+ static int get_ofi_version(void)
+ {
++    // fprintf(stderr, "YI****** %s MPIDI_OFI_MAJOR_VERSION(%d) MPIDI_OFI_MINOR_VERSION(%d)\n", __func__, MPIDI_OFI_MAJOR_VERSION, MPIDI_OFI_MINOR_VERSION);
++    // fprintf(stderr, "YI****** %s FI_MAJOR_VERSION(%d) FI_MINOR_VERSION(%d)\n", __func__, FI_MAJOR_VERSION, FI_MINOR_VERSION);
+     if (MPIDI_OFI_MAJOR_VERSION != -1 && MPIDI_OFI_MINOR_VERSION != -1)
+         return FI_VERSION(MPIDI_OFI_MAJOR_VERSION, MPIDI_OFI_MINOR_VERSION);
+     else
+@@ -1352,10 +1356,12 @@ static int open_fabric(void)
+                             mpi_errno, MPI_ERR_OTHER, "**ofi_provider_mismatch");
+     }
+ 
++    //fprintf(stderr, "\t YI[%s]**3** MPIDI_OFI_global.settings.enable_tagged = %d\n", __func__, MPIDI_OFI_global.settings.enable_tagged);
+     /* Third, update global settings */
+     if (MPIDI_OFI_ENABLE_RUNTIME_CHECKS) {
+         update_global_settings(prov, hints);
+     }
++    //fprintf(stderr, "\t YI[%s]**4** MPIDI_OFI_global.settings.enable_tagged = %d\n", __func__, MPIDI_OFI_global.settings.enable_tagged);
+ 
+     MPIDI_OFI_global.prov_use = fi_dupinfo(prov);
+     MPIR_Assert(MPIDI_OFI_global.prov_use);
+@@ -1626,6 +1633,12 @@ static void init_global_settings(const char *prov_name)
+     /* As of OFI version 1.5, FI_MR_SCALABLE and FI_MR_BASIC are deprecated. Internally, we now use
+      * FI_MR_VIRT_ADDRESS and FI_MR_PROV_KEY so set them appropriately depending on the OFI version
+      * being used. */
++    /* YI added */
++    UPDATE_SETTING_BY_CAP(major_version, MPIR_CVAR_CH4_OFI_MAJOR_VERSION);
++    UPDATE_SETTING_BY_CAP(minor_version, MPIR_CVAR_CH4_OFI_MINOR_VERSION);
++    /* end of YI */
++    // printf("YI[%d]**** %s in %s get_ofi_version() = %x FI_VERSION(1, 5) = %x\n", getpid(), __func__, __FILE__, get_ofi_version(), FI_VERSION(1, 5));
++    // fprintf(stderr, "YI[%d]**** %s in %s get_ofi_version() = %x FI_VERSION(1, 5) = %x\n", getpid(), __func__, __FILE__, get_ofi_version(), FI_VERSION(1, 5));
+     if (get_ofi_version() < FI_VERSION(1, 5)) {
+         /* If the OFI library is 1.5 or less, query whether or not to use FI_MR_SCALABLE and set
+          * FI_MR_VIRT_ADDRESS, FI_MR_ALLOCATED, and FI_MR_PROV_KEY as the opposite values. */
+@@ -1634,14 +1647,20 @@ static void init_global_settings(const char *prov_name)
+             MPIDI_OFI_global.settings.enable_mr_prov_key =
+             MPIDI_OFI_global.settings.enable_mr_allocated =
+             !MPIDI_OFI_global.settings.enable_mr_virt_address;
++	// printf("\t YI[%d]**1** MPIDI_OFI_global.settings.enable_mr_virt_address = %d\n", getpid(), MPIDI_OFI_global.settings.enable_mr_virt_address);
++	// fprintf(stderr, "\t YI[%d]**1** MPIDI_OFI_global.settings.enable_mr_virt_address = %d\n", getpid(), MPIDI_OFI_global.settings.enable_mr_virt_address);
+     } else {
+         UPDATE_SETTING_BY_CAP(enable_mr_virt_address, MPIR_CVAR_CH4_OFI_ENABLE_MR_VIRT_ADDRESS);
+         UPDATE_SETTING_BY_CAP(enable_mr_allocated, MPIR_CVAR_CH4_OFI_ENABLE_MR_ALLOCATED);
+         UPDATE_SETTING_BY_CAP(enable_mr_prov_key, MPIR_CVAR_CH4_OFI_ENABLE_MR_PROV_KEY);
++	// printf("\t YI[%d]**2** MPIDI_OFI_global.settings.enable_mr_virt_address = %d\n", getpid(), MPIDI_OFI_global.settings.enable_mr_virt_address);
++	// fprintf(stderr, "\t YI[%d]**2** MPIDI_OFI_global.settings.enable_mr_virt_address = %d\n", getpid(), MPIDI_OFI_global.settings.enable_mr_virt_address);
+     }
++
+     UPDATE_SETTING_BY_CAP(enable_tagged, MPIR_CVAR_CH4_OFI_ENABLE_TAGGED);
+     UPDATE_SETTING_BY_CAP(enable_am, MPIR_CVAR_CH4_OFI_ENABLE_AM);
+     UPDATE_SETTING_BY_CAP(enable_rma, MPIR_CVAR_CH4_OFI_ENABLE_RMA);
++    // fprintf(stderr, "\t YI[%d]**2** MPIDI_OFI_global.settings.enable_tagged = %d by prov_name(%s)\n", getpid(), MPIDI_OFI_global.settings.enable_tagged, prov_name);
+     /* try to enable atomics only when RMA is enabled */
+     if (MPIDI_OFI_ENABLE_RMA) {
+         UPDATE_SETTING_BY_CAP(enable_atomics, MPIR_CVAR_CH4_OFI_ENABLE_ATOMICS);
+@@ -1656,8 +1675,10 @@ static void init_global_settings(const char *prov_name)
+     UPDATE_SETTING_BY_CAP(context_bits, MPIR_CVAR_CH4_OFI_CONTEXT_ID_BITS);
+     UPDATE_SETTING_BY_CAP(source_bits, MPIR_CVAR_CH4_OFI_RANK_BITS);
+     UPDATE_SETTING_BY_CAP(tag_bits, MPIR_CVAR_CH4_OFI_TAG_BITS);
++#if 0 /* YI */
+     UPDATE_SETTING_BY_CAP(major_version, MPIR_CVAR_CH4_OFI_MAJOR_VERSION);
+     UPDATE_SETTING_BY_CAP(minor_version, MPIR_CVAR_CH4_OFI_MINOR_VERSION);
++#endif
+     UPDATE_SETTING_BY_CAP(num_am_buffers, MPIR_CVAR_CH4_OFI_NUM_AM_BUFFERS);
+     if (MPIDI_OFI_global.settings.num_am_buffers < 0) {
+         MPIDI_OFI_global.settings.num_am_buffers = 0;
+@@ -1909,6 +1930,11 @@ static void dump_global_settings(void)
+     fprintf(stdout, "MPIDI_OFI_CONTEXT_BITS: %d\n", MPIDI_OFI_CONTEXT_BITS);
+     fprintf(stdout, "MPIDI_OFI_SOURCE_BITS: %d\n", MPIDI_OFI_SOURCE_BITS);
+     fprintf(stdout, "MPIDI_OFI_TAG_BITS: %d\n", MPIDI_OFI_TAG_BITS);
++#define TOFU
++#ifdef TOFU
++    fprintf(stdout, "MPIDI_OFI_global.max_buffered_send: %d\n", MPIDI_OFI_global.max_buffered_send);
++    fprintf(stdout, "MPIDI_OFI_global.max_short_send: %d\n", MPIDI_OFI_global.max_short_send);
++#endif
+     fprintf(stdout, "======================================\n");
+ 
+     /* Discover the maximum number of ranks. If the source shift is not

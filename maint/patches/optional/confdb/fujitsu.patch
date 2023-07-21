@@ -1,0 +1,78 @@
+--- libtool.m4.org     2021-04-26 09:28:18.000000000 +0900
++++ libtool.m4 2021-04-26 10:00:23.000000000 +0900
+@@ -4285,6 +4285,12 @@
+       _LT_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
+       ;;
+     esac
++    case $cc_basename in
++    fcc* | FCC* | frt*)
++      _LT_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
++      _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++      ;;
++    esac
+   else
+     case $host_os in
+       aix[[4-9]]*)
+@@ -4405,6 +4411,10 @@
+	    _LT_TAGVAR(lt_prog_compiler_pic, $1)='-qpic'
+	    _LT_TAGVAR(lt_prog_compiler_static, $1)='-qstaticlink'
+	    ;;
++         fcc* | FCC* | frt*)
++           _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++           _LT_TAGVAR(lt_prog_compiler_pic, $1)='-Kpic'
++           ;;
+	  *)
+	    case `$CC -V 2>&1 | sed 5q` in
+	    *Sun\ C*)
+@@ -4628,6 +4638,10 @@
+         _LT_TAGVAR(lt_prog_compiler_pic, $1)="-Xcompiler $_LT_TAGVAR(lt_prog_compiler_pic, $1)"
+       fi
+       ;;
++    fcc* | FCC* | frt*)
++      _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++      _LT_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
++     ;;
+     esac
+   else
+     # PORTME Check for flag to pass linker flags through the system compiler.
+@@ -4750,6 +4764,10 @@
+         # ARM LLVM C/C++/Fortran
+         _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+         ;;
++      fcc* | FCC* | frt*)
++        _LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
++        _LT_TAGVAR(lt_prog_compiler_pic, $1)='-KPIC'
++      ;;
+       *)
+       case `$CC -V 2>&1 | sed 5q` in
+       *Sun\ Ceres\ Fortran* | *Sun*Fortran*\ [[1-7]].* | *Sun*Fortran*\ 8.[[0-3]]*)
+@@ -6448,6 +6467,13 @@
+       # what "hidden" libraries, object files and flags are used when
+       # linking a shared library.
+       output_verbose_link_cmd='$CC -shared $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
++      case $cc_basename in
++      fcc* | FCC* | frt*)
++         output_verbose_link_cmd='$CC -shared -Knolargepage $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
++         _LT_TAGVAR(archive_cmds, $1)='$CC -shared -Knolargepage $libobjs $deplibs $compiler_flags -Wl,-soname -Wl,$soname -o $lib'
++          _LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared -Knolargepage $libobjs $deplibs $compiler_flags -Wl,-soname -Wl,$soname -Wl,-retain-symbols-file -Wl,$export_symbols -o $lib'
++         ;;
++      esac
+
+     else
+       GXX=no
+@@ -7917,6 +7945,15 @@
+         esac
+       fi
+         ;;
++      linux* | k*bsd*-gnu | kopensolaris*-gnu | gnu*)
++        case $cc_basename in
++        fcc* | FCC* | frt*)
++          output_verbose_link_cmd='$CC -Knolargepage $CFLAGS -v conftest.$objext 2>&1 | $GREP -v "^Configured with:" | $GREP "\-L"'
++         archive_cmds='$CC -shared -Knolargepage $libobjs $deplibs $compiler_flags -Wl,-soname -Wl,$soname -o $lib'
++          archive_expsym_cmds='$CC -shared -Knolargepage $libobjs $deplibs $compiler_flags -Wl,-soname -Wl,$soname -Wl,-retain-symbols-file -Wl,$export_symbols -o $lib'
++          ;;
++        esac
++        ;;
+     esac
+     AC_MSG_RESULT([$enable_shared])
+

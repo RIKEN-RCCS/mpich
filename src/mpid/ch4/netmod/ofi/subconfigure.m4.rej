@@ -1,0 +1,26 @@
+--- src/mpid/ch4/netmod/ofi/subconfigure.m4
++++ src/mpid/ch4/netmod/ofi/subconfigure.m4
+@@ -72,6 +72,7 @@ AM_COND_IF([BUILD_CH4_NETMOD_OFI],[
+         enable_mrail="no"
+         enable_efa="no"
+         enable_netdir="no"
++	enable_tofu="no"
+     else
+         enable_psm="yes"
+         enable_psm2="yes"
+@@ -91,6 +92,7 @@ AM_COND_IF([BUILD_CH4_NETMOD_OFI],[
+         enable_mrail="yes"
+         enable_efa="yes"
+         enable_netdir="yes"
++	enable_tofu="yes"
+     fi
+ 
+     for provider in $netmod_args ; do
+@@ -294,6 +303,7 @@ AM_COND_IF([BUILD_CH4_NETMOD_OFI],[
+             prov_config="$prov_config --enable-mrail=${enable_mrail}"
+             prov_config="$prov_config --enable-efa=${enable_efa}"
+             prov_config="$prov_config --enable-netdir=${enable_netdir}"
++            prov_config="$prov_config --enable-netdir=${enable_tofu}"
+         fi
+ 
+         if test "x${ofi_direct_provider}" != "x" ; then

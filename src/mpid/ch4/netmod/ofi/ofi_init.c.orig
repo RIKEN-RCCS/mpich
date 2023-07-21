@@ -1466,8 +1466,6 @@ int ofi_am_init(void)
     if (MPIDI_OFI_ENABLE_AM) {
         /* Maximum possible message size for short message send (=eager send)
          * See MPIDI_OFI_do_am_isend for short/long switching logic */
-	//fprintf(stderr, "YI**** %s/%s MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE(%ld) <= MPIDI_OFI_global.max_msg_size(%ld))\n",
-	//	__func__, __FILE__, MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE, MPIDI_OFI_global.max_msg_size);
         MPIR_Assert(MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE <= MPIDI_OFI_global.max_msg_size);
         MPL_COMPILE_TIME_ASSERT(sizeof(MPIDI_OFI_am_request_header_t)
                                 < MPIDI_OFI_AM_HDR_POOL_CELL_SIZE);
@@ -1541,7 +1539,6 @@ int ofi_am_post_recv(int vni, int nic)
                                             FI_MULTI_RECV | FI_COMPLETION), 0, prepost, FALSE);
         }
     }
-    //fprintf(stderr, "\t YI[%s]**4** MPIDI_OFI_global.settings.enable_tagged = %d\n", __func__, MPIDI_OFI_global.settings.enable_tagged);
 
   fn_exit:
     return mpi_errno;
@@ -1562,34 +1559,4 @@ int MPIDI_OFI_am_repost_buffer(int vni, int am_idx)
     return mpi_errno;
   fn_fail:
     goto fn_exit;
-}
-
-// YI
-int MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE;
-void
-yi_workarround()
-{
-    int mpi_errno = MPI_SUCCESS;
-    int rc;
-    const char *tmp_str;
-    static int initialized = FALSE;
-    MPIR_T_cvar_value_t defaultval;
-
-    defaultval.d = 16*1024;
-    MPIR_T_CVAR_REGISTER_STATIC(
-	MPI_INT,
-	MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE, /* name */
-	&MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE, /* address */
-	1, /* count */
-	MPI_T_VERBOSITY_USER_BASIC,
-	MPI_T_SCOPE_LOCAL,
-	defaultval,
-	"CH4_OFI", /* category */
-	"This cvar controls the message size at which OFI native path switches from eager to rendezvous mode. It affect the AM path eager limit. OFI will init the MPIDI_OFI_global.max_short_send to the value of cvar. The default value is (16*1024).");
-    MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE= 16*1024;
-    rc = MPL_env2int("MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE", &(MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE));
-    MPIR_ERR_CHKANDJUMP1((-1 == rc),mpi_errno,MPI_ERR_OTHER,"**envvarparse","**envvarparse %s","MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE");
-    MPIDI_OFI_global.max_short_send = MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE;
-fn_fail:
-    fprintf(stderr, "%s: YI*** MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE = %d\n", __func__, MPIR_CVAR_CH4_OFI_SHORT_SEND_SIZE);
 }

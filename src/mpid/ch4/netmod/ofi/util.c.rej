@@ -1,0 +1,55 @@
+--- src/mpid/ch4/netmod/ofi/util.c
++++ src/mpid/ch4/netmod/ofi/util.c
+@@ -120,6 +120,8 @@ static int MPIDI_OFI_get_huge(MPIDI_OFI_send_control_t * info)
+     /* Look up the communicator */
+     comm_ptr = MPIDIG_context_id_to_comm(info->comm_id);
+ 
++    //printf("%s: MPIDI_posted_huge_recv_head = %p in %s\n", __func__, MPIDI_posted_huge_recv_head, __FILE__); fflush(stdout);
++
+     /* If there has been a posted receive, search through the list of unmatched
+      * receives to find the one that goes with the incoming message. */
+     {
+@@ -130,6 +132,10 @@ static int MPIDI_OFI_get_huge(MPIDI_OFI_send_control_t * info)
+                          info->origin_rank, info->tag));
+ 
+         LL_FOREACH(MPIDI_posted_huge_recv_head, list_ptr) {
++	    //printf("%s: YI--- ptr->comm_id(%d) info->comm_id(%d)"
++	    //" ptr->rank(%d) info->origin_rank(%d)"
++	    //" ptr->tag(%lx) info->tag(%lx)\n",
++	    //__func__, list_ptr->comm_id, info->comm_id, list_ptr->rank, info->origin_rank, list_ptr->tag, info->tag); fflush(stdout);
+             if (list_ptr->comm_id == info->comm_id &&
+                 list_ptr->rank == info->origin_rank && list_ptr->tag == info->tag) {
+                 MPL_DBG_MSG_FMT(MPIR_DBG_PT2PT, VERBOSE,
+@@ -160,6 +166,8 @@ static int MPIDI_OFI_get_huge(MPIDI_OFI_send_control_t * info)
+         }
+     }
+ 
++    //printf("%s: recv_elem = %p\n", __func__, recv_elem); fflush(stdout);
++
+     if (recv_elem == NULL) {    /* Put the struct describing the transfer on an
+                                  * unexpected list to be retrieved later */
+         MPL_DBG_MSG_FMT(MPIR_DBG_PT2PT, VERBOSE,
+@@ -175,7 +183,14 @@ static int MPIDI_OFI_get_huge(MPIDI_OFI_send_control_t * info)
+     }
+ 
+     recv_elem->event_id = MPIDI_OFI_EVENT_GET_HUGE;
++// YI
++#define TOFU
++#ifdef TOFU /* YI 20201213 */
++    recv_elem->cur_offset = MPIDI_OFI_global.max_short_send;
++#else
+     recv_elem->cur_offset = MPIDI_OFI_global.max_msg_size;
++#endif
++    //fprintf(stderr, "YIYI %s: cur_offset(0x%lx) in %s\n", __func__, recv_elem->cur_offset, __FILE__); fflush(stderr); fprintf(stdout, "YIYI %s: cur_offset(0x%lx) in %s\n", __func__, recv_elem->cur_offset, __FILE__); fflush(stdout);
+     recv_elem->remote_info = *info;
+     recv_elem->comm_ptr = comm_ptr;
+     recv_elem->next = NULL;
+@@ -195,6 +210,8 @@ int MPIDI_OFI_control_handler(int handler_id, void *am_hdr, void *data, MPI_Aint
+     int mpi_errno = MPI_SUCCESS;
+     MPIDI_OFI_send_control_t *ctrlsend = (MPIDI_OFI_send_control_t *) am_hdr;
+ 
++    //printf("%s: YIYI ctrlsend->type(%d) 0: HUGE, 1: HUGEACK\n", __func__, ctrlsend->type); fflush(stdout);
++    //fprintf(stderr, "%s: YIYI ctrlsend->type(%d) 0: HUGE, 1: HUGEACK\n", __func__, ctrlsend->type); fflush(stderr);
+     if (is_async)
+         *req = NULL;
+ 

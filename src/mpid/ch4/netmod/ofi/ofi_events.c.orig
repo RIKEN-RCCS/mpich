@@ -296,8 +296,6 @@ static int am_recv_event(int vni, struct fi_cq_tagged_entry *wc, MPIR_Request * 
 
     expected_seqno = MPIDI_OFI_am_get_next_recv_seqno(vni, am_hdr->fi_src_addr);
     if (am_hdr->seqno != expected_seqno) {
-	//printf("%s: YIYI\tunexpected enqueued\n", __func__); fflush(stdout);
-	//fprintf(stderr, "%s: YIYI\tunexpected enqueued\n", __func__); fflush(stderr);
         /* This message came earlier than the one that we were expecting.
          * Put it in the queue to process it later. */
         MPL_DBG_MSG_FMT(MPIDI_CH4_DBG_GENERAL, TERSE,
@@ -310,8 +308,6 @@ static int am_recv_event(int vni, struct fi_cq_tagged_entry *wc, MPIR_Request * 
         goto fn_exit;
     }
 
-    //printf("%s: YIYI\texpected handler_id=%d in %s\n", __func__, am_hdr->handler_id, __FILE__); fflush(stdout);
-    //fprintf(stderr, "%s: YIYI\texpected handler_id=%d in %s\n", __func__, am_hdr->handler_id, __FILE__); fflush(stderr);
     /* Received an expected message */
   fn_repeat:
     fi_src_addr = am_hdr->fi_src_addr;

@@ -1,0 +1,45 @@
+--- src/mpi/misc/utils.c
++++ src/mpi/misc/utils.c
+@@ -52,8 +52,23 @@ int MPIR_Localcopy(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype sendtyp
+ 
+     if (sendtype_iscontig) {
+         MPI_Aint actual_unpack_bytes;
++#if 0 /* CHECKED */
++	fprintf(stderr, "%s: sendtype_contig TOFU sendbuf(%p) sendtype_true_lb(%lx) cpy_sz(%ld) recvbuf(%p), recvcount(%ld)\n", __func__, sendbuf, sendtype_true_lb, copy_sz, recvbuf, recvcount); fflush(stderr);
++	{
++	    int	i; unsigned char ch;
++	    for (i = 0; i < copy_sz; i++) {
++		ch += ((unsigned char*) sendbuf)[i];
++	    }
++	    fprintf(stderr, "%s: CHECKED sendbuf ch=%x\n", __func__, ch);
++	    for (i = 0; i < copy_sz; i++) {
++		ch += ((unsigned char*) recvbuf)[i];
++	    }
++	    fprintf(stderr, "%s: CHECKED recvbuf ch=%x\n", __func__, ch);
++	}
++#endif
+         MPIR_Typerep_unpack((char *) sendbuf + sendtype_true_lb, copy_sz, recvbuf, recvcount,
+                             recvtype, 0, &actual_unpack_bytes);
++	// fprintf(stderr, "%s: DONE actual_unpack_bytes(%ld) copy_sz(%ld)\n", __func__, actual_unpack_bytes, copy_sz); fflush(stderr);
+         MPIR_ERR_CHKANDJUMP(actual_unpack_bytes != copy_sz, mpi_errno, MPI_ERR_TYPE,
+                             "**dtypemismatch");
+     } else if (recvtype_iscontig) {
+@@ -91,15 +110,17 @@ int MPIR_Localcopy(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype sendtyp
+             } else {
+                 max_pack_bytes = copy_sz - sfirst;
+             }
+-
++	    // fprintf(stderr, "%s: TOFU sendbuf(%p) sendcout(%ld) sendtype(0x%x) sfirst(%ld) buf(%p) max_pack_bytes(%ld)\n", __func__, sendbuf, sendcount, sendtype, sfirst, buf); fflush(stderr);
+             MPI_Aint actual_pack_bytes;
+             MPIR_Typerep_pack(sendbuf, sendcount, sendtype, sfirst, buf,
+                               max_pack_bytes, &actual_pack_bytes);
++	    // fprintf(stderr, "%s: TOFU MPIR_Typerep_pack return actual_pack_bytes(%ld)\n", __func__, actual_pack_bytes); fflush(stderr);
+             MPIR_Assert(actual_pack_bytes > 0);
+ 
+             sfirst += actual_pack_bytes;
+ 
+             MPI_Aint actual_unpack_bytes;
++	    // fprintf(stderr, "%s: TOFU buf(%p) actual_pack_bytes(%lx) recvbuf(%p) recvcount(%ld)\n", __func__, buf, actual_pack_bytes, recvbuf, recvcount); fflush(stderr);
+             MPIR_Typerep_unpack(buf, actual_pack_bytes, recvbuf, recvcount, recvtype,
+                                 rfirst, &actual_unpack_bytes);
+             MPIR_Assert(actual_unpack_bytes > 0);

@@ -1,0 +1,253 @@
+can't find file to patch at input line 5
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/allgather/allgather.c b/src/mpi/coll/allgather/allgather.c
+|index 155124db1..ab01b7e0b 100644
+|--- a/src/mpi/coll/allgather/allgather.c
+|+++ b/src/mpi/coll/allgather/allgather.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+3 out of 3 hunks ignored
+patching file src/mpi/coll/allgather/allgather_intra_recursive_doubling.c
+Hunk #1 FAILED at 33.
+Hunk #2 succeeded at 46 (offset -4 lines).
+Hunk #3 FAILED at 85.
+Hunk #4 succeeded at 92 (offset -4 lines).
+Hunk #5 FAILED at 143.
+Hunk #6 succeeded at 153 (offset -4 lines).
+Hunk #7 succeeded at 175 (offset -4 lines).
+3 out of 7 hunks FAILED -- saving rejects to file src/mpi/coll/allgather/allgather_intra_recursive_doubling.c.rej
+patching file src/mpi/coll/allgather/allgather_intra_ring.c
+Hunk #1 FAILED at 34.
+Hunk #2 succeeded at 41 (offset -3 lines).
+Hunk #3 succeeded at 70 (offset -3 lines).
+Hunk #4 succeeded at 91 (offset -3 lines).
+Hunk #5 succeeded at 103 (offset -3 lines).
+1 out of 5 hunks FAILED -- saving rejects to file src/mpi/coll/allgather/allgather_intra_ring.c.rej
+can't find file to patch at input line 265
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/allgatherv/allgatherv.c b/src/mpi/coll/allgatherv/allgatherv.c
+|index 7cb411eee..d8c837067 100644
+|--- a/src/mpi/coll/allgatherv/allgatherv.c
+|+++ b/src/mpi/coll/allgatherv/allgatherv.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+patching file src/mpi/coll/allgatherv/allgatherv_intra_ring.c
+Hunk #1 succeeded at 52 (offset -6 lines).
+Hunk #2 FAILED at 111.
+1 out of 2 hunks FAILED -- saving rejects to file src/mpi/coll/allgatherv/allgatherv_intra_ring.c.rej
+can't find file to patch at input line 322
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/allreduce/allreduce.c b/src/mpi/coll/allreduce/allreduce.c
+|index 8447f709b..b9488976c 100644
+|--- a/src/mpi/coll/allreduce/allreduce.c
+|+++ b/src/mpi/coll/allreduce/allreduce.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+2 out of 2 hunks ignored
+patching file src/mpi/coll/allreduce/allreduce_intra_recursive_doubling.c
+patching file src/mpi/coll/alltoall/alltoall_intra_brucks.c
+Hunk #1 succeeded at 51 (offset -3 lines).
+Hunk #2 succeeded at 80 (offset -3 lines).
+Hunk #3 succeeded at 121 (offset -2 lines).
+Hunk #4 succeeded at 147 (offset -2 lines).
+Hunk #5 succeeded at 167 (offset -2 lines).
+can't find file to patch at input line 550
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/barrier/barrier.c b/src/mpi/coll/barrier/barrier.c
+|index 904a28838..59995eebb 100644
+|--- a/src/mpi/coll/barrier/barrier.c
+|+++ b/src/mpi/coll/barrier/barrier.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+4 out of 4 hunks ignored
+can't find file to patch at input line 611
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/barrier/barrier_intra_dissemination.c b/src/mpi/coll/barrier/barrier_intra_dissemination.c
+|index c84e80ac7..07fc04896 100644
+|--- a/src/mpi/coll/barrier/barrier_intra_dissemination.c
+|+++ b/src/mpi/coll/barrier/barrier_intra_dissemination.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+3 out of 3 hunks ignored
+can't find file to patch at input line 657
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/gather/gather.c b/src/mpi/coll/gather/gather.c
+|index a51cf422d..92a65ac29 100644
+|--- a/src/mpi/coll/gather/gather.c
+|+++ b/src/mpi/coll/gather/gather.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+can't find file to patch at input line 684
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/gatherv/gatherv.c b/src/mpi/coll/gatherv/gatherv.c
+|index 9f25443f8..52e1dbbe6 100644
+|--- a/src/mpi/coll/gatherv/gatherv.c
+|+++ b/src/mpi/coll/gatherv/gatherv.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+2 out of 2 hunks ignored
+patching file src/mpi/coll/gatherv/gatherv_allcomm_linear.c
+Hunk #1 succeeded at 35 with fuzz 2.
+patching file src/mpi/coll/helper_fns.c
+Hunk #1 FAILED at 185.
+Hunk #2 succeeded at 274 (offset -5 lines).
+Hunk #3 succeeded at 310 with fuzz 2 (offset -6 lines).
+Hunk #4 FAILED at 331.
+2 out of 4 hunks FAILED -- saving rejects to file src/mpi/coll/helper_fns.c.rej
+can't find file to patch at input line 862
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/coll/scatter/scatter.c b/src/mpi/coll/scatter/scatter.c
+|index 38483aaee..9189a5e28 100644
+|--- a/src/mpi/coll/scatter/scatter.c
+|+++ b/src/mpi/coll/scatter/scatter.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+4 out of 4 hunks ignored
+patching file src/mpi/coll/scatter/scatter_intra_binomial.c
+Hunk #1 FAILED at 33.
+Hunk #2 FAILED at 59.
+Hunk #3 succeeded at 79 (offset -1 lines).
+Hunk #4 succeeded at 122 (offset -1 lines).
+Hunk #5 succeeded at 189 (offset -1 lines).
+2 out of 5 hunks FAILED -- saving rejects to file src/mpi/coll/scatter/scatter_intra_binomial.c.rej
+patching file src/mpi/coll/scatterv/scatterv_allcomm_linear.c
+patching file src/mpi/comm/contextid.c
+Hunk #1 FAILED at 468.
+1 out of 1 hunk FAILED -- saving rejects to file src/mpi/comm/contextid.c.rej
+patching file src/mpi/init/local_proc_attrs.c
+Hunk #1 succeeded at 78 with fuzz 2 (offset -48 lines).
+patching file src/mpi/misc/utils.c
+Hunk #1 FAILED at 52.
+Hunk #2 succeeded at 114 with fuzz 1 (offset 44 lines).
+Hunk #3 FAILED at 91.
+Hunk #4 succeeded at 156 (offset 44 lines).
+2 out of 4 hunks FAILED -- saving rejects to file src/mpi/misc/utils.c.rej
+can't find file to patch at input line 1254
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/pt2pt/recv.c b/src/mpi/pt2pt/recv.c
+|index f141509cb..bb4a455fe 100644
+|--- a/src/mpi/pt2pt/recv.c
+|+++ b/src/mpi/pt2pt/recv.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+2 out of 2 hunks ignored
+can't find file to patch at input line 1274
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|diff --git a/src/mpi/pt2pt/send.c b/src/mpi/pt2pt/send.c
+|index 0d35f1c15..407ad8860 100644
+|--- a/src/mpi/pt2pt/send.c
+|+++ b/src/mpi/pt2pt/send.c
+--------------------------
+File to patch: 
+Skip this patch? [y] 
+Skipping patch.
+1 out of 1 hunk ignored
+patching file src/mpid/ch4/netmod/ofi/globals.c
+Hunk #1 FAILED at 191.
+1 out of 1 hunk FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/globals.c.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_capability_sets.h
+Hunk #1 FAILED at 26.
+Hunk #2 succeeded at 63 with fuzz 1 (offset 9 lines).
+Hunk #3 succeeded at 740 (offset 245 lines).
+1 out of 3 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_capability_sets.h.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_events.c
+Hunk #1 FAILED at 83.
+Hunk #2 FAILED at 137.
+Hunk #3 FAILED at 222.
+Hunk #4 FAILED at 257.
+Hunk #5 FAILED at 279.
+Hunk #6 FAILED at 290.
+Hunk #7 FAILED at 403.
+Hunk #8 FAILED at 414.
+Hunk #9 FAILED at 599.
+Hunk #10 succeeded at 296 with fuzz 2 (offset -322 lines).
+Hunk #11 succeeded at 310 with fuzz 2 (offset -322 lines).
+Hunk #12 FAILED at 761.
+10 out of 12 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_events.c.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_init.c
+Hunk #1 FAILED at 418.
+Hunk #2 succeeded at 1466 (offset 765 lines).
+Hunk #3 FAILED at 1352.
+Hunk #4 succeeded at 1541 with fuzz 2 (offset 154 lines).
+Hunk #5 FAILED at 1626.
+Hunk #6 FAILED at 1634.
+Hunk #7 FAILED at 1656.
+Hunk #8 FAILED at 1909.
+Hunk #9 succeeded at 1563 (offset -497 lines).
+6 out of 9 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_init.c.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_progress.c
+Hunk #1 FAILED at 72.
+1 out of 1 hunk FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_progress.c.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_recv.h
+Hunk #1 FAILED at 165.
+Hunk #2 FAILED at 205.
+2 out of 2 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_recv.h.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_send.h
+Hunk #1 FAILED at 190.
+Hunk #2 FAILED at 235.
+Hunk #3 FAILED at 286.
+Hunk #4 FAILED at 293.
+4 out of 4 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/ofi_send.h.rej
+patching file src/mpid/ch4/netmod/ofi/ofi_types.h
+Hunk #1 succeeded at 27 with fuzz 1.
+patching file src/mpid/ch4/netmod/ofi/subconfigure.m4
+Hunk #1 FAILED at 72.
+Hunk #2 FAILED at 91.
+Hunk #3 succeeded at 121 with fuzz 2 (offset 5 lines).
+Hunk #4 succeeded at 213 (offset 9 lines).
+Hunk #5 FAILED at 294.
+3 out of 5 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/subconfigure.m4.rej
+patching file src/mpid/ch4/netmod/ofi/util.c
+Hunk #1 FAILED at 120.
+Hunk #2 FAILED at 130.
+Hunk #3 FAILED at 160.
+Hunk #4 FAILED at 175.
+Hunk #5 FAILED at 195.
+5 out of 5 hunks FAILED -- saving rejects to file src/mpid/ch4/netmod/ofi/util.c.rej
+patching file src/mpid/ch4/src/ch4_coll_impl.h
+Hunk #1 FAILED at 361.
+Hunk #2 succeeded at 673 (offset 298 lines).
+1 out of 2 hunks FAILED -- saving rejects to file src/mpid/ch4/src/ch4_coll_impl.h.rej
+patching file src/mpid/ch4/src/ch4_init.c
+Hunk #1 FAILED at 599.
+1 out of 1 hunk FAILED -- saving rejects to file src/mpid/ch4/src/ch4_init.c.rej

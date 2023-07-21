@@ -82,9 +82,15 @@ int MPIR_Allreduce_intra_recursive_doubling(const void *sendbuf,
              * doubling */
             newrank = -1;
         } else {        /* odd */
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU calling MPIC_Recv TAG(%d)\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
             mpi_errno = MPIC_Recv(tmp_buf, count,
                                   datatype, rank - 1,
                                   MPIR_ALLREDUCE_TAG, comm_ptr, MPI_STATUS_IGNORE, errflag);
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU return calling MPIC_Recv TAG(%d)\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
             if (mpi_errno) {
                 /* for communication errors, just record the error but continue */
                 *errflag =
@@ -124,10 +130,16 @@ int MPIR_Allreduce_intra_recursive_doubling(const void *sendbuf,
 
             /* Send the most current data, which is in recvbuf. Recv
              * into tmp_buf */
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU calling MPIC_Sendrecv TAG(%d)\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
             mpi_errno = MPIC_Sendrecv(recvbuf, count, datatype,
                                       dst, MPIR_ALLREDUCE_TAG, tmp_buf,
                                       count, datatype, dst,
                                       MPIR_ALLREDUCE_TAG, comm_ptr, MPI_STATUS_IGNORE, errflag);
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU return calling MPIC_Sendrecv TAG(%d)\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
             if (mpi_errno) {
                 /* for communication errors, just record the error but continue */
                 *errflag =
@@ -142,11 +154,23 @@ int MPIR_Allreduce_intra_recursive_doubling(const void *sendbuf,
 
             if (is_commutative || (dst < rank)) {
                 /* op is commutative OR the order is already right */
+#ifdef UTF_DEBUG_20201229
+		fprintf(stderr, "%s: YI TOFU calling MPIR_Reduce_local 1\n", __func__);
+#endif
                 mpi_errno = MPIR_Reduce_local(tmp_buf, recvbuf, count, datatype, op);
+#ifdef UTF_DEBUG_20201229
+		fprintf(stderr, "%s: YI TOFU return calling MPIR_Reduce_local 1\n", __func__);
+#endif
                 MPIR_ERR_CHECK(mpi_errno);
             } else {
                 /* op is noncommutative and the order is not right */
+#ifdef UTF_DEBUG_20201229
+		fprintf(stderr, "%s: YI TOFU calling MPIR_Reduce_local 2\n", __func__);
+#endif
                 mpi_errno = MPIR_Reduce_local(recvbuf, tmp_buf, count, datatype, op);
+#ifdef UTF_DEBUG_20201229
+		fprintf(stderr, "%s: YI TOFU reurn calling MPIR_Reduce_local 2\n", __func__);
+#endif
                 MPIR_ERR_CHECK(mpi_errno);
 
                 /* copy result back into recvbuf */
@@ -163,10 +187,17 @@ int MPIR_Allreduce_intra_recursive_doubling(const void *sendbuf,
         if (rank % 2)   /* odd */
             mpi_errno = MPIC_Send(recvbuf, count,
                                   datatype, rank - 1, MPIR_ALLREDUCE_TAG, comm_ptr, errflag);
-        else    /* even */
+        else {   /* even */
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU calling MPIC_Recv TAG(%d) 2\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
             mpi_errno = MPIC_Recv(recvbuf, count,
                                   datatype, rank + 1,
                                   MPIR_ALLREDUCE_TAG, comm_ptr, MPI_STATUS_IGNORE, errflag);
+#ifdef UTF_DEBUG_20201229
+	    fprintf(stderr, "%s: YI TOFU return calling MPIC_Recv TAG(%d) 2\n", __func__, MPIR_ALLREDUCE_TAG);
+#endif
+	}
         if (mpi_errno) {
             /* for communication errors, just record the error but continue */
             *errflag =

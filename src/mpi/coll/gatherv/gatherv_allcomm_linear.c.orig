@@ -35,10 +35,6 @@ cvars:
  *
  * Cost = (p-1).alpha + n.((p-1)/p).beta
 */
-#define DEBUG_TOFU
-#ifdef DEBUG_TOFU
-extern int tofu_gatherv_do, tofu_gatherv_cnt;
-#endif
 int MPIR_Gatherv_allcomm_linear(const void *sendbuf,
                                 MPI_Aint sendcount,
                                 MPI_Datatype sendtype,
@@ -60,9 +56,6 @@ int MPIR_Gatherv_allcomm_linear(const void *sendbuf,
 
     rank = comm_ptr->rank;
 
-#ifdef DEBUG_TOFU
-    tofu_gatherv_do = 1; tofu_gatherv_cnt++;
-#endif
     /* If rank == root, then I recv lots, otherwise I send */
     if (((comm_ptr->comm_kind == MPIR_COMM_KIND__INTRACOMM) && (root == rank)) ||
         ((comm_ptr->comm_kind == MPIR_COMM_KIND__INTERCOMM) && (root == MPI_ROOT))) {
@@ -132,10 +125,7 @@ int MPIR_Gatherv_allcomm_linear(const void *sendbuf,
                 min_procs = comm_size + 1;      /* Disable ssend */
             else if (min_procs == 0)    /* backwards compatibility, use default value */
                 MPIR_CVAR_GET_DEFAULT_INT(MPIR_CVAR_GATHERV_INTER_SSEND_MIN_PROCS, &min_procs);
-#define TOFU_MOD
-#ifdef TOFU_MOD
-	    usleep(rank*2);
-#endif
+
             if (comm_size >= min_procs) {
                 mpi_errno = MPIC_Ssend(sendbuf, sendcount, sendtype, root,
                                        MPIR_GATHERV_TAG, comm_ptr, errflag);
@@ -162,10 +152,8 @@ int MPIR_Gatherv_allcomm_linear(const void *sendbuf,
         }
     }
 
+
   fn_exit:
-#ifdef DEBUG_TOFU
-    tofu_gatherv_do = 0;
-#endif
     MPIR_CHKLMEM_FREEALL();
     if (mpi_errno_ret)
         mpi_errno = mpi_errno_ret;

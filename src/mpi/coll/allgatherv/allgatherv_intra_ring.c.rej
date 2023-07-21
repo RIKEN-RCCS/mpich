@@ -1,0 +1,17 @@
+--- src/mpi/coll/allgatherv/allgatherv_intra_ring.c
++++ src/mpi/coll/allgatherv/allgatherv_intra_ring.c
+@@ -111,8 +127,14 @@ int MPIR_Allgatherv_intra_ring(const void *sendbuf,
+                    chunk_count) ? chunk_count : (recvcounts[sidx] - soffset);
+         recvnow = ((recvcounts[ridx] - roffset) >
+                    chunk_count) ? chunk_count : (recvcounts[ridx] - roffset);
++#ifdef TOFU
++        sbuf = (char *) recvbuf + (size_t) ((((size_t) displs[sidx]) + ((size_t) soffset)) * (size_t) recvtype_extent);
++        rbuf = (char *) recvbuf + (size_t) ((((size_t)displs[ridx]) + ((size_t) roffset)) * (size_t) recvtype_extent);
++	//fprintf(stderr, "%s: TOFU sbuf = %p, %p, rbuf = %p, %p\n", sbuf, (char *) recvbuf + ((displs[sidx] + soffset) * recvtype_extent), rbuf, (char *) recvbuf + ((displs[ridx] + roffset) * recvtype_extent)); fflush(stderr);
++#else
+         sbuf = (char *) recvbuf + ((displs[sidx] + soffset) * recvtype_extent);
+         rbuf = (char *) recvbuf + ((displs[ridx] + roffset) * recvtype_extent);
++#endif
+ 
+         /* Protect against wrap-around of indices */
+         if (!tosend)

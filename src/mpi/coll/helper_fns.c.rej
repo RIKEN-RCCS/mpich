@@ -1,0 +1,62 @@
+--- src/mpi/coll/helper_fns.c
++++ src/mpi/coll/helper_fns.c
+@@ -185,9 +185,11 @@ int MPIC_Recv(void *buf, MPI_Aint count, MPI_Datatype datatype, int source, int
+ 
+     mpi_errno = MPID_Recv(buf, count, datatype, source, tag, comm_ptr,
+                           context_offset, status, &request_ptr);
++    if (mpi_errno) fprintf(stderr, "%s TOFUTOFU MPID_Recv mpi_errno(%d)\n", __func__, mpi_errno);
+     MPIR_ERR_CHECK(mpi_errno);
+     if (request_ptr) {
+         mpi_errno = MPIC_Wait(request_ptr, errflag);
++	if (mpi_errno) fprintf(stderr, "%s TOFUTOFU MPIC_Wait mpi_errno(%d)\n", __func__, mpi_errno);
+         MPIR_ERR_CHECK(mpi_errno);
+ 
+         *status = request_ptr->status;
+@@ -331,18 +345,46 @@ int MPIC_Sendrecv(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype sendtype
+ 
+     /* If dest is MPI_PROC_NULL, create a completed request and return. */
+     if (unlikely(dest == MPI_PROC_NULL)) {
++#ifdef UTF_DEBUG_20201229
++	fprintf(stderr, "%s:\t des=proc_null request completed\n", __func__);
++#endif
+         send_req_ptr = MPIR_Request_create_complete(MPIR_REQUEST_KIND__SEND);
+         MPIR_ERR_CHKANDSTMT(send_req_ptr == NULL, mpi_errno, MPIX_ERR_NOREQ, goto fn_fail,
+                             "**nomemreq");
+     } else {
++#ifdef UTF_DEBUG_20201229
++	fprintf(stderr, "%s:\t calling MPID_Isend_coll to rank(%d)\n", __func__, dest);
++#endif
+         mpi_errno = MPID_Isend_coll(sendbuf, sendcount, sendtype, dest, sendtag,
+                                     comm_ptr, context_offset, &send_req_ptr, errflag);
+         MPIR_ERR_CHECK(mpi_errno);
+     }
+-
++#ifdef UTF_DEBUG_20201229
++    fprintf(stderr, "%s:\t calling MPIC_wait: sendreq\n", __func__);
++#endif
++#ifdef TOFU
++    tofu_sendrecv_wait_prevsend = tofu_sendrecv_wait_send;
++    tofu_sendrecv_wait_send = dest;
++#endif
+     mpi_errno = MPIC_Wait(send_req_ptr, errflag);
++#ifdef TOFU
++    tofu_sendrecv_wait_send = -dest;
++#endif
+     MPIR_ERR_CHECK(mpi_errno);
++#ifdef UTF_DEBUG_20201229
++    fprintf(stderr, "%s:\t calling MPIC_wait: recvreq\n", __func__);
++#endif
++#ifdef TOFU
++    tofu_sendrecv_wait_prevrecv = tofu_sendrecv_wait_recv;
++    tofu_sendrecv_wait_recv = source;
++#endif
+     mpi_errno = MPIC_Wait(recv_req_ptr, errflag);
++#ifdef UTF_DEBUG_20201229
++    fprintf(stderr, "%s:\t\t done\n", __func__);
++#endif
++#ifdef TOFU
++    tofu_sendrecv_wait_recv = -source;
++#endif
+     if (mpi_errno)
+         MPIR_ERR_POPFATAL(mpi_errno);
+ 

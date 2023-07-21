@@ -1,0 +1,55 @@
+--- autogen.sh	2021-03-09 11:59:57.000000000 +0900
++++ autogen.sh	2021-03-09 14:24:16.000000000 +0900
+@@ -371,14 +371,14 @@ AC_INIT(foo,1.0)
+ AC_PROG_LIBTOOL
+ AC_OUTPUT
+ _EOF
+-        AUTORECONF="$autoreconf -I $libtoolm4dir"
++        AUTORECONF="$autoreconf -B $libtoolm4dir"
+         if (cd .tmp && $AUTORECONF -ivf >/dev/null 2>&1) ; then
+             new_autoreconf_works=yes
+         fi
+         rm -rf .tmp
+     fi
+     echo "$new_autoreconf_works"
+-    # If autoreconf accepts -I <libtool's m4 dir> correctly, use -I.
++    # If autoreconf accepts -B <libtool's m4 dir> correctly, use -B.
+     # If not, run libtoolize before autoreconf (i.e. for autoconf <= 2.63)
+     # This test is more general than checking the autoconf version.
+     if [ "$new_autoreconf_works" != "yes" ] ; then
+@@ -989,6 +989,8 @@ if [ "$do_build_configure" = "yes" ] ; t
+                 oracle_patch_requires_rebuild=no
+                 flang_patch_requires_rebuild=no
+                 arm_patch_requires_rebuild=no
++                fujitsu_patch_requires_rebuild=no
++                f77_patch_requires_rebuild=no
+                 ibm_patch_requires_rebuild=no
+                 nvc_patch_requires_rebuild=no
+                 sys_lib_dlsearch_path_patch_requires_rebuild=no
+@@ -1060,6 +1062,26 @@ if [ "$do_build_configure" = "yes" ] ; t
+                         # Remove possible leftovers, which don't imply a failure
+                         rm -f $amdir/confdb/libtool.m4.orig
+                         echo "done"
++                    else
++                        echo "failed"
++                    fi
++		    echo_n "Patching libtool.m4 for Fortran 77 compilers..."
++                    patch -N -s -l $amdir/confdb/libtool.m4 maint/patches/optional/confdb/f77.patch
++                    if [ $? -eq 0 ] ; then
++                        f77_patch_requires_rebuild=yes
++                        # Remove possible leftovers, which don't imply a failure
++                        rm -f $amdir/confdb/libtool.m4.orig
++                        echo "done"
++                    else
++                        echo "failed"
++                    fi
++                    echo_n "Patching libtool.m4 for Fujitsu Fortran compilers..."
++                    patch -N -s -l $amdir/confdb/libtool.m4 maint/patches/optional/confdb/fujitsu.patch
++                    if [ $? -eq 0 ] ; then
++			fujitsu_patch_requires_rebuild=yes
++                        # Remove possible leftovers, which don't imply a failure
++                        rm -f $amdir/confdb/libtool.m4.orig
++                        echo "done"
+                     else
+                         echo "failed"
+                     fi

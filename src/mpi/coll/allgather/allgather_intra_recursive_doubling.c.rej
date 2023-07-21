@@ -1,0 +1,58 @@
+--- src/mpi/coll/allgather/allgather_intra_recursive_doubling.c
++++ src/mpi/coll/allgather/allgather_intra_recursive_doubling.c
+@@ -33,8 +33,14 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
+     MPI_Aint curr_cnt, last_recv_cnt = 0;
+     int dst;
+     MPI_Status status;
++#define TOFU
++#ifdef TOFU
++    int mask, dst_tree_root, my_tree_root, nprocs_completed, k, tmp_mask, tree_root;
++    MPI_Aint	offset, send_offset, recv_offset;
++#else
+     int mask, dst_tree_root, my_tree_root,
+         send_offset, recv_offset, nprocs_completed, k, offset, tmp_mask, tree_root;
++#endif
+ 
+     if (((sendcount == 0) && (sendbuf != MPI_IN_PLACE)) || (recvcount == 0))
+         return MPI_SUCCESS;
+@@ -85,10 +100,28 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
+         my_tree_root <<= i;
+ 
+         /* FIXME: saving an MPI_Aint into an int */
++#ifdef TOFU
++        send_offset = (MPI_Aint) my_tree_root * recvcount * recvtype_extent;
++        recv_offset = (MPI_Aint) dst_tree_root * recvcount * recvtype_extent;
++#else
+         send_offset = my_tree_root * recvcount * recvtype_extent;
+         recv_offset = dst_tree_root * recvcount * recvtype_extent;
++#endif
+ 
+         if (dst < comm_size) {
++#ifdef TOFU
++	    //fprintf(stderr, "recvbuf(%p) recv_offset(%ld) (comm_size - dst_tree_root)*recvcount = %ld\n",
++	    //recvbuf, recv_offset, (comm_size - dst_tree_root)*recvcount); fflush(stderr);
++	    //fprintf(stderr, "calling MPIC_Sendrecv  ((char *) recvbuf + send_offset) = %p ((char *) recvbuf + recv_offset) = %p\n",((char *) recvbuf + send_offset),((char *) recvbuf + recv_offset)); fflush(stderr);
++            mpi_errno = MPIC_Sendrecv(((char *) recvbuf + send_offset),
++                                      curr_cnt, recvtype, dst,
++                                      MPIR_ALLGATHER_TAG,
++                                      ((char *) recvbuf + recv_offset),
++                                      (MPI_Aint) (comm_size - dst_tree_root) * recvcount,
++                                      recvtype, dst,
++                                      MPIR_ALLGATHER_TAG, comm_ptr, &status, errflag);
++	    //fprintf(stderr, "\tDONE\n"); fflush(stderr);
++#else
+             mpi_errno = MPIC_Sendrecv(((char *) recvbuf + send_offset),
+                                       curr_cnt, recvtype, dst,
+                                       MPIR_ALLGATHER_TAG,
+@@ -143,7 +177,11 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
+             k--;
+ 
+             /* FIXME: saving an MPI_Aint into an int */
++#ifdef TOFU
++            offset = (MPI_Aint) recvcount * (MPI_Aint) (my_tree_root + mask) * (MPI_Aint) recvtype_extent;
++#else
+             offset = recvcount * (my_tree_root + mask) * recvtype_extent;
++#endif
+             tmp_mask = mask >> 1;
+ 
+             while (tmp_mask) {

@@ -1,0 +1,13 @@
+--- src/mpid/ch4/src/ch4_coll_impl.h
++++ src/mpid/ch4/src/ch4_coll_impl.h
+@@ -361,8 +361,10 @@ MPL_STATIC_INLINE_PREFIX int MPIDI_Reduce_intra_composition_alpha(const void *se
+         mpi_errno = MPIDI_SHM_mpi_reduce(sendbuf, recvbuf, count, datatype, op, 0, comm->node_comm,
+                                          errflag);
+ #else
++	// fprintf(stderr, "YI %s ==> calling MPIDI_NM_mpi_reduce(sendbuf=%p, recvbuf=%p) in %s\n", __func__, sendbuf, recvbuf, __FILE__);
+         mpi_errno = MPIDI_NM_mpi_reduce(sendbuf, recvbuf, count, datatype, op, 0, comm->node_comm,
+                                         errflag);
++	// fprintf(stderr, "YI %s <== return from MPIDI_NM_mpi_reduce\n", __func__);
+ #endif /* MPIDI_CH4_DIRECT_NETMOD */
+ 
+         if (mpi_errno) {

@@ -1,0 +1,10 @@
+--- src/mpid/ch4/netmod/ofi/ofi_capability_sets.h
++++ src/mpid/ch4/netmod/ofi/ofi_capability_sets.h
+@@ -26,6 +26,7 @@ enum {
+     MPIDI_OFI_SET_NUMBER_BGQ,
+     MPIDI_OFI_SET_NUMBER_VERBS_RXM,
+     MPIDI_OFI_SET_NUMBER_RXM,
++    MPIDI_OFI_SET_NUMBER_TOFU,		// TOFU
+     MPIDI_OFI_NUM_SETS
+ };
+ 

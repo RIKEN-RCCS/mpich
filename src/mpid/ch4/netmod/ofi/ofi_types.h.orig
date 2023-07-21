@@ -27,8 +27,7 @@
 #define MPIDI_OFI_MAX_VNIS                  16
 
 #define MPIDI_OFI_MAP_NOT_FOUND            ((void*)(-1UL))
-// #define MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE  (16 * 1024)
-#define MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE  (MPIDI_OFI_global.max_short_send)	// YI
+#define MPIDI_OFI_DEFAULT_SHORT_SEND_SIZE  (16 * 1024)
 #define MPIDI_OFI_MAX_NUM_AM_BUFFERS       (8)
 #define MPIDI_OFI_AM_BUFF_SZ               (1 * 1024 * 1024)
 #define MPIDI_OFI_IOV_MAX                  (32)

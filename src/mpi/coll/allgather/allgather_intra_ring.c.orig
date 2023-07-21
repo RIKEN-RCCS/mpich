@@ -41,22 +41,9 @@ int MPIR_Allgather_intra_ring(const void *sendbuf,
 
     /* First, load the "local" version in the recvbuf. */
     if (sendbuf != MPI_IN_PLACE) {
-	// fprintf(stderr, "%s: callin MPIR_Localcopy sendbuf(%p) recvbuf(%p) rank(%d) recvcount(%ld) recvtype_extent(%ld)\n", __func__, sendbuf, recvbuf, rank, recvcount, recvtype_extent); fflush(stderr);
-	//{
-	//char	*bf1 = ((char *) recvbuf + (rank * recvcount * recvtype_extent));
-	//char	*bf2 = ((char *) recvbuf + ((size_t) rank * (size_t) recvcount * (size_t) recvtype_extent));
-	//fprintf(stderr, "\t recvbuf=%p bf1=%p bf2=%p\n", recvbuf, bf1, bf2); fflush(stderr);
-	//}
-#define TOFU
-#ifdef TOFU
-        mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
-                                   ((char *) recvbuf +
-                                    (size_t) rank * (size_t) recvcount * (size_t) recvtype_extent), recvcount, recvtype);
-#else
         mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
                                    ((char *) recvbuf +
                                     rank * recvcount * recvtype_extent), recvcount, recvtype);
-#endif
         MPIR_ERR_CHECK(mpi_errno);
     }
 
@@ -70,19 +57,6 @@ int MPIR_Allgather_intra_ring(const void *sendbuf,
     j = rank;
     jnext = left;
     for (i = 1; i < comm_size; i++) {
-	//fprintf(stderr, "%s: calling MPIC_Sendrecv right(%d) left(%d)\n", __func__, right, left); fflush(stderr);
-#define TOFU
-#ifdef TOFU
-	//fprintf(stderr, "%s:\t bf=%p\n", __func__, ((char *) recvbuf + (size_t) jnext * (size_t) recvcount * (size_t) recvtype_extent)); fflush(stderr);
-        mpi_errno = MPIC_Sendrecv(((char *) recvbuf +
-                                   (size_t) j * (size_t) recvcount * (size_t) recvtype_extent),
-                                  recvcount, recvtype, right,
-                                  MPIR_ALLGATHER_TAG,
-                                  ((char *) recvbuf +
-                                   (size_t) jnext * (size_t) recvcount * (size_t) recvtype_extent),
-                                  recvcount, recvtype, left,
-                                  MPIR_ALLGATHER_TAG, comm_ptr, MPI_STATUS_IGNORE, errflag);
-#else
         mpi_errno = MPIC_Sendrecv(((char *) recvbuf +
                                    j * recvcount * recvtype_extent),
                                   recvcount, recvtype, right,
@@ -91,7 +65,6 @@ int MPIR_Allgather_intra_ring(const void *sendbuf,
                                    jnext * recvcount * recvtype_extent),
                                   recvcount, recvtype, left,
                                   MPIR_ALLGATHER_TAG, comm_ptr, MPI_STATUS_IGNORE, errflag);
-#endif
         if (mpi_errno) {
             /* for communication errors, just record the error but continue */
             *errflag =
@@ -103,7 +76,6 @@ int MPIR_Allgather_intra_ring(const void *sendbuf,
         j = jnext;
         jnext = (comm_size + jnext - 1) % comm_size;
     }
-    //fprintf(stderr, "%s:  DONE\n", __func__); fflush(stderr);
 
   fn_exit:
     if (mpi_errno_ret)

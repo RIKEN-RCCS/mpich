@@ -1,0 +1,11 @@
+patching file configure.ac
+Hunk #1 succeeded at 2743 (offset -167 lines).
+Hunk #2 FAILED at 3069.
+1 out of 2 hunks FAILED -- saving rejects to file configure.ac.rej
+patching file autogen.sh
+Hunk #1 FAILED at 371.
+Hunk #2 FAILED at 989.
+Hunk #3 FAILED at 1060.
+3 out of 3 hunks FAILED -- saving rejects to file autogen.sh.rej
+patching file maint/patches/optional/confdb/f77.patch
+patching file maint/patches/optional/confdb/fujitsu.patch

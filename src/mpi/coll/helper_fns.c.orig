@@ -274,12 +274,6 @@ int MPIC_Ssend(const void *buf, MPI_Aint count, MPI_Datatype datatype, int dest,
     /* --END ERROR HANDLING-- */
 }
 
-#define TOFU
-#ifdef TOFU
-int tofu_sendrecv_wait_send, tofu_sendrecv_wait_recv;
-int tofu_sendrecv_wait_prevsend, tofu_sendrecv_wait_prevrecv;
-#endif
-
 int MPIC_Sendrecv(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype sendtype,
                   int dest, int sendtag, void *recvbuf, MPI_Aint recvcount,
                   MPI_Datatype recvtype, int source, int recvtag,
@@ -310,14 +304,8 @@ int MPIC_Sendrecv(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype sendtype
         recv_req_ptr = MPIR_Request_create_complete(MPIR_REQUEST_KIND__RECV);
         MPIR_ERR_CHKANDSTMT(recv_req_ptr == NULL, mpi_errno, MPIX_ERR_NOREQ, goto fn_fail,
                             "**nomemreq");
-#ifdef UTF_DEBUG_20201229
-	fprintf(stderr, "%s:\t set_procnull\n", __func__);
-#endif
         MPIR_Status_set_procnull(&recv_req_ptr->status);
     } else {
-#ifdef UTF_DEBUG_20201229
-	fprintf(stderr, "%s:\t calling MPID_Irecv from rank(%d)\n", __func__, source);
-#endif
         mpi_errno = MPID_Irecv(recvbuf, recvcount, recvtype, source, recvtag,
                                comm_ptr, attr, &recv_req_ptr);
         MPIR_ERR_CHECK(mpi_errno);

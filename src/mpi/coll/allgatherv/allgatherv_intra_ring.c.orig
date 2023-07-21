@@ -52,25 +52,9 @@ int MPIR_Allgatherv_intra_ring(const void *sendbuf,
 
     if (sendbuf != MPI_IN_PLACE) {
         /* First, load the "local" version in the recvbuf. */
-#define TOFU
-#ifdef TOFU
-	/*
-	fprintf(stderr, "%s: TOFU sendbuf(%p) sendcount(%d) recvbuf(%p) "
-		"revcounts(%d) displs[%d] = %d recvtype_extent = %d "
-		"(recvbuf + displs[rank] * recvtype_exent) = %p\n"
-		"((char *) recvbuf + ((size_t) displs[rank]) * ((size_t) recvtype_extent)) = %p\n",
-		__func__, sendbuf, sendcount, recvbuf, recvcounts, rank, displs[rank], recvtype_extent,
-		((char *) recvbuf + displs[rank] * recvtype_extent),
-		((char *) recvbuf + ((size_t) displs[rank]) * ((size_t) recvtype_extent))); fflush(stderr);
-	*/
-        mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
-                                   ((char *) recvbuf + ((size_t) displs[rank]) * ((size_t) recvtype_extent)),
-                                   recvcounts[rank], recvtype);
-#else
         mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
                                    ((char *) recvbuf + displs[rank] * recvtype_extent),
                                    recvcounts[rank], recvtype);
-#endif
         MPIR_ERR_CHECK(mpi_errno);
     }
 

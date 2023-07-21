@@ -1,0 +1,32 @@
+--- src/mpid/ch4/netmod/ofi/globals.c
++++ src/mpid/ch4/netmod/ofi/globals.c
+@@ -191,4 +191,29 @@ MPIDI_OFI_capabilities_t MPIDI_OFI_caps_list[MPIDI_OFI_NUM_SETS] =
+      .tag_bits = MPIDI_OFI_TAG_BITS_RXM,
+      .major_version = MPIDI_OFI_MAJOR_VERSION_MINIMAL,
+      .minor_version = MPIDI_OFI_MINOR_VERSION_MINIMAL}
++    ,
++    {   /* tofu TOFU */
++     .enable_av_table = MPIDI_OFI_ENABLE_AV_TABLE_TOFU,
++     .enable_scalable_endpoints = MPIDI_OFI_ENABLE_SCALABLE_ENDPOINTS_TOFU,
++     .enable_shared_contexts = MPIDI_OFI_ENABLE_SHARED_CONTEXTS_TOFU,
++     .enable_mr_scalable = MPIDI_OFI_ENABLE_MR_SCALABLE_TOFU,
++     .enable_mr_virt_address = MPIDI_OFI_ENABLE_MR_VIRT_ADDRESS_TOFU,
++     .enable_mr_allocated = MPIDI_OFI_ENABLE_MR_ALLOCATED_TOFU,
++     .enable_mr_prov_key = MPIDI_OFI_ENABLE_MR_PROV_KEY_TOFU,
++     .enable_tagged = MPIDI_OFI_ENABLE_TAGGED_TOFU_INIT,
++     .enable_am = MPIDI_OFI_ENABLE_AM_TOFU,
++     .enable_rma = MPIDI_OFI_ENABLE_RMA_TOFU,
++     .enable_atomics = MPIDI_OFI_ENABLE_ATOMICS_TOFU,
++     .enable_data_auto_progress = MPIDI_OFI_ENABLE_DATA_AUTO_PROGRESS_TOFU,
++     .enable_control_auto_progress = MPIDI_OFI_ENABLE_CONTROL_AUTO_PROGRESS_TOFU,
++     .enable_pt2pt_nopack = MPIDI_OFI_ENABLE_PT2PT_NOPACK_TOFU,
++     .num_am_buffers = MPIDI_OFI_NUM_AM_BUFFERS_TOFU,
++     .max_endpoints = MPIDI_OFI_MAX_ENDPOINTS_TOFU,
++     .max_endpoints_bits = MPIDI_OFI_MAX_ENDPOINTS_BITS_TOFU,
++     .fetch_atomic_iovecs = MPIDI_OFI_FETCH_ATOMIC_IOVECS_TOFU,
++     .context_bits = MPIDI_OFI_CONTEXT_BITS_TOFU,
++     .source_bits = MPIDI_OFI_SOURCE_BITS_TOFU,
++     .tag_bits = MPIDI_OFI_TAG_BITS_TOFU,
++     .major_version = MPIDI_OFI_MAJOR_VERSION_MINIMAL,
++     .minor_version = MPIDI_OFI_MINOR_VERSION_MINIMAL}
+ };

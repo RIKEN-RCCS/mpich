@@ -1,0 +1,11 @@
+--- configure.ac	2021-01-21 03:04:56.000000000 +0900
++++ configure.ac	2021-03-08 10:39:30.975059712 +0900
+@@ -3069,7 +3072,7 @@
+ for type in short int long long_long float double long_double wchar_t \
+     float_int double_int long_int short_int two_int long_double_int     \
+     _Bool float__Complex double__Complex long_double__Complex \
+-    _Float16; do
++    $TYPE_FLOAT16; do
+     eval len=\$ac_cv_sizeof_$type
+     if test -z "$len" ; then
+        len=0

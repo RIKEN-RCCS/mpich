@@ -46,21 +46,12 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
 
     MPIR_Datatype_get_extent_macro(recvtype, recvtype_extent);
 
-#ifdef TOFU
-    if (sendbuf != MPI_IN_PLACE) {
-        mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
-                                   ((char *) recvbuf +
-                                    (size_t) rank * recvcount * recvtype_extent), recvcount, recvtype);
-        MPIR_ERR_CHECK(mpi_errno);
-    }
-#else
     if (sendbuf != MPI_IN_PLACE) {
         mpi_errno = MPIR_Localcopy(sendbuf, sendcount, sendtype,
                                    ((char *) recvbuf +
                                     rank * recvcount * recvtype_extent), recvcount, recvtype);
         MPIR_ERR_CHECK(mpi_errno);
     }
-#endif
 
     curr_cnt = recvcount;
 
@@ -92,7 +83,6 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
                                       (comm_size - dst_tree_root) * recvcount,
                                       recvtype, dst,
                                       MPIR_ALLGATHER_TAG, comm_ptr, &status, errflag);
-#endif
             if (mpi_errno) {
                 /* for communication errors, just record the error but continue */
                 *errflag =
@@ -153,11 +143,9 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
                  * can send if they have the data */
                 if ((dst > rank) && (rank < tree_root + nprocs_completed)
                     && (dst >= tree_root + nprocs_completed)) {
-		    //fprintf(stderr, "calling MPIC_Send ((char *) recvbuf + offset) = %p\n", ((char *) recvbuf + offset)); fflush(stderr);
                     mpi_errno = MPIC_Send(((char *) recvbuf + offset),
                                           last_recv_cnt,
                                           recvtype, dst, MPIR_ALLGATHER_TAG, comm_ptr, errflag);
-		    //fprintf(stderr, "\tDONE\n"); fflush(stderr);
                     /* last_recv_cnt was set in the previous
                      * receive. that's the amount of data to be
                      * sent now. */
@@ -175,12 +163,10 @@ int MPIR_Allgather_intra_recursive_doubling(const void *sendbuf,
                 else if ((dst < rank) &&
                          (dst < tree_root + nprocs_completed) &&
                          (rank >= tree_root + nprocs_completed)) {
-		    //fprintf(stderr, "calling MPIC_Recv ((char *) recvbuf + offset) = %p\n", ((char *) recvbuf + offset));  fflush(stderr);
                     mpi_errno = MPIC_Recv(((char *) recvbuf + offset),
-                                          (MPI_Aint) (comm_size - (my_tree_root + mask)) * recvcount,
+                                          (comm_size - (my_tree_root + mask)) * recvcount,
                                           recvtype, dst,
                                           MPIR_ALLGATHER_TAG, comm_ptr, &status, errflag);
-		    //fprintf(stderr, "\tDONE\n"); fflush(stderr);
                     /* nprocs_completed is also equal to the
                      * no. of processes whose data we don't have */
                     if (mpi_errno) {

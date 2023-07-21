@@ -51,28 +51,11 @@ int MPIR_Alltoall_intra_brucks(const void *sendbuf,
 
     /* allocate temporary buffer */
     MPIR_Datatype_get_size_macro(recvtype, recvtype_sz);
-#define TOFU
-#ifdef TOFU
-    pack_size = (MPI_Aint) recvcount * comm_size * recvtype_sz;
-#else
     pack_size = recvcount * comm_size * recvtype_sz;
-#endif
     MPIR_CHKLMEM_MALLOC(tmp_buf, void *, pack_size, mpi_errno, "tmp_buf", MPL_MEM_BUFFER);
 
     /* Do Phase 1 of the algorithim. Shift the data blocks on process i
      * upwards by a distance of i blocks. Store the result in recvbuf. */
-#ifdef TOFU
-    mpi_errno = MPIR_Localcopy((char *) sendbuf +
-                               (MPI_Aint) rank * sendcount * sendtype_extent,
-                               (MPI_Aint) (comm_size - rank) * sendcount, sendtype, recvbuf,
-                               (MPI_Aint) (comm_size - rank) * recvcount, recvtype);
-    MPIR_ERR_CHECK(mpi_errno);
-    mpi_errno = MPIR_Localcopy(sendbuf, (MPI_Aint) rank * sendcount, sendtype,
-                               (char *) recvbuf +
-                               (MPI_Aint) (comm_size - rank) * recvcount * recvtype_extent,
-                               (MPI_Aint) rank * recvcount, recvtype);
-    MPIR_ERR_CHECK(mpi_errno);
-#else
     mpi_errno = MPIR_Localcopy((char *) sendbuf +
                                rank * sendcount * sendtype_extent,
                                (comm_size - rank) * sendcount, sendtype, recvbuf,
@@ -80,10 +63,9 @@ int MPIR_Alltoall_intra_brucks(const void *sendbuf,
     MPIR_ERR_CHECK(mpi_errno);
     mpi_errno = MPIR_Localcopy(sendbuf, rank * sendcount, sendtype,
                                (char *) recvbuf +
-                               (MPI_Aint) (comm_size - rank) * recvcount * recvtype_extent,
+                               (comm_size - rank) * recvcount * recvtype_extent,
                                rank * recvcount, recvtype);
     MPIR_ERR_CHECK(mpi_errno);
-#endif
     /* Input data is now stored in recvbuf with datatype recvtype */
 
     /* Now do Phase 2, the communication phase. It takes
@@ -121,11 +103,7 @@ int MPIR_Alltoall_intra_brucks(const void *sendbuf,
         mpi_errno = MPIR_Type_commit_impl(&newtype);
         MPIR_ERR_CHECK(mpi_errno);
 
-#ifdef TOFU
-        newtype_sz = (MPI_Aint) count * recvcount * recvtype_sz;
-#else
         newtype_sz = count * recvcount * recvtype_sz;
-#endif
         mpi_errno = MPIR_Localcopy(recvbuf, 1, newtype, tmp_buf, newtype_sz, MPI_BYTE);
         MPIR_ERR_CHECK(mpi_errno);
 
@@ -147,18 +125,7 @@ int MPIR_Alltoall_intra_brucks(const void *sendbuf,
     }
 
     /* Rotate blocks in recvbuf upwards by (rank + 1) blocks */
-#ifdef TOFU
-    mpi_errno = MPIR_Localcopy((char *) recvbuf + (MPI_Aint) (rank + 1) * recvcount * recvtype_extent,
-                               (MPI_Aint) (comm_size - rank - 1) * recvcount, recvtype, tmp_buf,
-                               (MPI_Aint) (comm_size - rank - 1) * recvcount * recvtype_sz, MPI_BYTE);
-    MPIR_ERR_CHECK(mpi_errno);
-    mpi_errno = MPIR_Localcopy(recvbuf, (MPI_Aint) (rank + 1) * recvcount, recvtype,
-                               (char *) tmp_buf + (MPI_Aint) (comm_size - rank - 1)
-                               * recvcount * recvtype_sz,
-                               (MPI_Aint) (rank + 1) * recvcount * recvtype_sz, MPI_BYTE);
-    MPIR_ERR_CHECK(mpi_errno);
-#else
-    mpi_errno = MPIR_Localcopy((char *) recvbuf + (MPI_Aint) (rank + 1) * recvcount * recvtype_extent,
+    mpi_errno = MPIR_Localcopy((char *) recvbuf + (rank + 1) * recvcount * recvtype_extent,
                                (comm_size - rank - 1) * recvcount, recvtype, tmp_buf,
                                (comm_size - rank - 1) * recvcount * recvtype_sz, MPI_BYTE);
     MPIR_ERR_CHECK(mpi_errno);
@@ -167,25 +134,16 @@ int MPIR_Alltoall_intra_brucks(const void *sendbuf,
                                * recvcount * recvtype_sz,
                                (rank + 1) * recvcount * recvtype_sz, MPI_BYTE);
     MPIR_ERR_CHECK(mpi_errno);
-#endif
 
     /* Blocks are in the reverse order now (comm_size-1 to 0).
      * Reorder them to (0 to comm_size-1) and store them in recvbuf. */
 
     for (i = 0; i < comm_size; i++) {
-#ifdef TOFU
-        mpi_errno = MPIR_Localcopy((char *) tmp_buf + (MPI_Aint) i * recvcount * recvtype_sz,
-                                   (MPI_Aint) recvcount * recvtype_sz, MPI_BYTE,
-                                   (char *) recvbuf + (MPI_Aint) (comm_size - i -
+        mpi_errno = MPIR_Localcopy((char *) tmp_buf + i * recvcount * recvtype_sz,
+                                   recvcount * recvtype_sz, MPI_BYTE,
+                                   (char *) recvbuf + (comm_size - i -
                                                        1) * recvcount * recvtype_extent, recvcount,
                                    recvtype);
-#else
-        mpi_errno = MPIR_Localcopy((char *) tmp_buf + (MPI_Aint) i * recvcount * recvtype_sz,
-                                   (MPI_Aint) recvcount * recvtype_sz, MPI_BYTE,
-                                   (char *) recvbuf + (MPI_Aint) (comm_size - i -
-                                                       1) * recvcount * recvtype_extent, recvcount,
-                                   recvtype);
-#endif
         MPIR_ERR_CHECK(mpi_errno);
     }
 

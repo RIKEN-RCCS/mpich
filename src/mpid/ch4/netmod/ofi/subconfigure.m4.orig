@@ -121,9 +121,6 @@ AM_COND_IF([BUILD_CH4_NETMOD_OFI],[
             "cxi")
                 enable_cxi="yes"
                 ;;
-	    "tofu")
-		enable_tofu="yes"
-		;;
 
             dnl For these providers, we don't know exactly which capabilities we
             dnl want to select by default so we turn on runtime checks. At some point
@@ -212,10 +209,6 @@ AM_COND_IF([BUILD_CH4_NETMOD_OFI],[
             "bgq")
                 AC_DEFINE([MPIDI_CH4_OFI_USE_SET_BGQ], [1], [Define to use bgq capability set])
                 enable_bgq="yes"
-                ;;
-            "tofu")
-                AC_DEFINE([MPIDI_CH4_OFI_USE_SET_TOFU], [1], [Define to use tofu capability set])
-                enable_netdir="yes"
                 ;;
             "verbs")
                 AC_DEFINE([MPIDI_CH4_OFI_USE_SET_RUNTIME], [1], [Define to use runtime capability set])

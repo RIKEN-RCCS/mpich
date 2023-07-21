@@ -2743,9 +2743,6 @@ if test "$MPID_NO_FLOAT16" != "yes" ; then
     if test "$pac_cv_have_float16" = "yes" ; then
         AC_DEFINE(HAVE_FLOAT16,1,[Define if _Float16 is supported])
     fi
-    TYPE_FLOAT16=_Float16
-else
-    TYPE_FLOAT16=
 fi
 
 # ----------------------------------------------------------------------------

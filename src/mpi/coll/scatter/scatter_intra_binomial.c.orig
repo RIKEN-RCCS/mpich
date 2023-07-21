@@ -79,32 +79,10 @@ int MPIR_Scatter_intra_binomial(const void *sendbuf, MPI_Aint sendcount, MPI_Dat
      * order. */
     if (rank == root) {
         if (root != 0) {
-#ifdef TOFU
-            tmp_buf_size = nbytes * (MPI_Aint) comm_size;
-#else
             tmp_buf_size = nbytes * comm_size;
-#endif
             MPIR_CHKLMEM_MALLOC(tmp_buf, void *, tmp_buf_size, mpi_errno, "tmp_buf",
                                 MPL_MEM_BUFFER);
-#ifdef TOFU
-            if (recvbuf != MPI_IN_PLACE)
-                mpi_errno = MPIR_Localcopy(((char *) sendbuf + (MPI_Aint) extent * (MPI_Aint) sendcount * (MPI_Aint) rank),
-                                           sendcount * (comm_size - rank), sendtype, tmp_buf,
-                                           (MPI_Aint) nbytes * (MPI_Aint) (comm_size - rank), MPI_BYTE);
-            else
-                mpi_errno = MPIR_Localcopy(((char *) sendbuf + (MPI_Aint) extent * (MPI_Aint) sendcount * (MPI_Aint) (rank + 1)),
-                                           (MPI_Aint) sendcount * (MPI_Aint) (comm_size - rank - 1),
-                                           sendtype, (char *) tmp_buf + nbytes,
-                                           (MPI_Aint) nbytes * (MPI_Aint) (comm_size - rank - 1), MPI_BYTE);
-            MPIR_ERR_CHECK(mpi_errno);
 
-            mpi_errno = MPIR_Localcopy(sendbuf, sendcount * (MPI_Aint) rank, sendtype,
-                                       ((char *) tmp_buf + (MPI_Aint) nbytes * (MPI_Aint) (comm_size - rank)),
-                                       (MPI_Aint) nbytes * rank, MPI_BYTE);
-            MPIR_ERR_CHECK(mpi_errno);
-
-            curr_cnt = nbytes * (MPI_Aint) comm_size;
-#else
             if (recvbuf != MPI_IN_PLACE)
                 mpi_errno = MPIR_Localcopy(((char *) sendbuf + extent * sendcount * rank),
                                            sendcount * (comm_size - rank), sendtype, tmp_buf,
@@ -122,14 +100,8 @@ int MPIR_Scatter_intra_binomial(const void *sendbuf, MPI_Aint sendcount, MPI_Dat
             MPIR_ERR_CHECK(mpi_errno);
 
             curr_cnt = nbytes * comm_size;
-#endif
         } else
-#ifdef TOFU
-            curr_cnt = (MPI_Aint) sendcount * comm_size;
-	//fprintf(stderr, "%s: TOFU 1.1 curr_cnt(%ld)\n", __func__, curr_cnt);
-#else
             curr_cnt = sendcount * comm_size;
-#endif
     }
 
     /* root has all the data; others have zero so far */
@@ -189,37 +161,19 @@ int MPIR_Scatter_intra_binomial(const void *sendbuf, MPI_Aint sendcount, MPI_Dat
                 dst -= comm_size;
 
             if ((rank == root) && (root == 0)) {
-#ifdef TOFU
-                send_subtree_cnt = curr_cnt - (MPI_Aint) sendcount * mask;
-                /* mask is also the size of this process's subtree */
-                mpi_errno = MPIC_Send(((char *) sendbuf +
-                                       (MPI_Aint) extent * (MPI_Aint) sendcount * (MPI_Aint) mask),
-                                      send_subtree_cnt,
-                                      sendtype, dst, MPIR_SCATTER_TAG, comm_ptr, errflag);
-#else
                 send_subtree_cnt = curr_cnt - sendcount * mask;
                 /* mask is also the size of this process's subtree */
                 mpi_errno = MPIC_Send(((char *) sendbuf +
                                        extent * sendcount * mask),
                                       send_subtree_cnt,
                                       sendtype, dst, MPIR_SCATTER_TAG, comm_ptr, errflag);
-#endif
             } else {
-#ifdef TOFU
-                /* non-zero root and others */
-                send_subtree_cnt = curr_cnt - (MPI_Aint) nbytes * mask;
-                /* mask is also the size of this process's subtree */
-                mpi_errno = MPIC_Send(((char *) tmp_buf + (MPI_Aint) nbytes * mask),
-                                      send_subtree_cnt,
-                                      MPI_BYTE, dst, MPIR_SCATTER_TAG, comm_ptr, errflag);
-#else
                 /* non-zero root and others */
                 send_subtree_cnt = curr_cnt - nbytes * mask;
                 /* mask is also the size of this process's subtree */
                 mpi_errno = MPIC_Send(((char *) tmp_buf + nbytes * mask),
                                       send_subtree_cnt,
                                       MPI_BYTE, dst, MPIR_SCATTER_TAG, comm_ptr, errflag);
-#endif
             }
             if (mpi_errno) {
                 /* for communication errors, just record the error but continue */

@@ -114,20 +114,16 @@ static int do_localcopy(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype se
         MPIR_GPU_query_pointer_attr(recvbuf, &recv_attr);
 
         if (send_attr.type == MPL_GPU_POINTER_DEV && recv_attr.type == MPL_GPU_POINTER_DEV) {
-	    // fprintf(stderr, "%s: TOFU case 1 buf = %p\n", __func__, buf); fflush(stderr);
             MPL_gpu_malloc((void **) &buf, COPY_BUFFER_SZ, recv_attr.device);
         } else if (send_attr.type == MPL_GPU_POINTER_DEV || recv_attr.type == MPL_GPU_POINTER_DEV) {
             MPL_gpu_malloc_host((void **) &buf, COPY_BUFFER_SZ);
-	    // fprintf(stderr, "%s: TOFU case 2 buf = %p\n", __func__, buf); fflush(stderr);
         } else {
-	    // fprintf(stderr, "%s: TOFU case 3 buf = %p\n", __func__, buf); fflush(stderr);
             MPIR_CHKLMEM_MALLOC(buf, char *, COPY_BUFFER_SZ, mpi_errno, "buf", MPL_MEM_BUFFER);
         }
 
         sfirst = 0;
         rfirst = 0;
 
-	// fprintf(stderr, "%s: TOFU copy_sz(%ld) sfirst(%ld COPY_BUFFER_SZ(%d)\n", __func__, copy_sz, sfirst, COPY_BUFFER_SZ); fflush(stderr);
         while (1) {
             MPI_Aint max_pack_bytes;
             if (copy_sz - sfirst > COPY_BUFFER_SZ) {
@@ -156,7 +152,6 @@ static int do_localcopy(const void *sendbuf, MPI_Aint sendcount, MPI_Datatype se
             MPIR_ERR_CHKANDJUMP(actual_pack_bytes != actual_unpack_bytes, mpi_errno,
                                 MPI_ERR_TYPE, "**dtypemismatch");
 
-	    // fprintf(stderr, "%s: TOFU rfirst(%ld) copy_sz(%ld)\n", __func__, rfirst, copy_sz); fflush(stderr);
             if (rfirst == copy_sz) {
                 /* successful completion */
                 break;

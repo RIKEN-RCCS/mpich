@@ -1,0 +1,12 @@
+--- src/mpid/ch4/src/ch4_init.c
++++ src/mpid/ch4/src/ch4_init.c
+@@ -599,6 +599,9 @@ int MPID_Init(int requested, int *provided)
+ 
+         /* Use the minimum tag_bits from the netmod and shmod */
+         MPIR_Process.tag_bits = MPL_MIN(shm_tag_bits, nm_tag_bits);
++#ifdef UTF_DEBUG_20201229
++	fprintf(stderr, "%s: MPIR_Process.tag_bits = %d shm_tag_bits=%d nm_tag_bits=%d\n", __func__, MPIR_Process.tag_bits, shm_tag_bits, nm_tag_bits);
++#endif
+     }
+ 
+     MPIDIG_am_check_init();

@@ -48,8 +48,62 @@ int MPIR_Scatterv_allcomm_linear(const void *sendbuf, const MPI_Aint * sendcount
                             "starray", MPL_MEM_BUFFER);
 
         reqs = 0;
+#define TOFU_MOD
+#define	NBATCH	48
+#ifdef TOFU_MOD
+	{
+	    int	nbatch = 0;
+	    int	start_pos = 0;
+	    for (i = 0; i < comm_size; i++) {
+		if (sendcounts[i]) {
+		    if ((comm_ptr->comm_kind == MPIR_COMM_KIND__INTRACOMM) && (i == rank)) {
+			if (recvbuf != MPI_IN_PLACE) {
+			    mpi_errno = MPIR_Localcopy(((char *) sendbuf + (MPI_Aint) displs[rank] * extent),
+						       sendcounts[rank], sendtype,
+						       recvbuf, recvcount, recvtype);
+			    MPIR_ERR_CHECK(mpi_errno);
+			}
+		    } else {
+			mpi_errno = MPIC_Isend(((char *) sendbuf + (MPI_Aint) displs[i] * extent),
+					       sendcounts[i], sendtype, i,
+					       MPIR_SCATTERV_TAG, comm_ptr, &reqarray[reqs++], errflag);
+			MPIR_ERR_CHECK(mpi_errno);
+			nbatch++;
+		    }
+		}
+		if (nbatch == NBATCH) { 
+		    mpi_errno = MPIC_Waitall(nbatch, &reqarray[start_pos], &starray[start_pos], errflag);
+		    if (mpi_errno && mpi_errno != MPI_ERR_IN_STATUS)
+			MPIR_ERR_POP(mpi_errno);
+		    start_pos = reqs; nbatch = 0;
+		}
+	    }
+	    if (nbatch > 0) {
+		mpi_errno = MPIC_Waitall(nbatch, &reqarray[start_pos], &starray[start_pos], errflag);
+		if (mpi_errno && mpi_errno != MPI_ERR_IN_STATUS)
+		    MPIR_ERR_POP(mpi_errno);
+	    }
+	}
+#else
         for (i = 0; i < comm_size; i++) {
             if (sendcounts[i]) {
+#define TOFU
+#ifdef TOFU
+                if ((comm_ptr->comm_kind == MPIR_COMM_KIND__INTRACOMM) && (i == rank)) {
+                    if (recvbuf != MPI_IN_PLACE) {
+                        mpi_errno = MPIR_Localcopy(((char *) sendbuf + (MPI_Aint) displs[rank] * extent),
+                                                   sendcounts[rank], sendtype,
+                                                   recvbuf, recvcount, recvtype);
+                        MPIR_ERR_CHECK(mpi_errno);
+                    }
+                } else {
+                    mpi_errno = MPIC_Isend(((char *) sendbuf + (MPI_Aint) displs[i] * extent),
+                                           sendcounts[i], sendtype, i,
+                                           MPIR_SCATTERV_TAG, comm_ptr, &reqarray[reqs++], errflag);
+                    MPIR_ERR_CHECK(mpi_errno);
+                }
+            }
+#else
                 if ((comm_ptr->comm_kind == MPIR_COMM_KIND__INTRACOMM) && (i == rank)) {
                     if (recvbuf != MPI_IN_PLACE) {
                         mpi_errno = MPIR_Localcopy(((char *) sendbuf + displs[rank] * extent),
@@ -64,11 +118,13 @@ int MPIR_Scatterv_allcomm_linear(const void *sendbuf, const MPI_Aint * sendcount
                     MPIR_ERR_CHECK(mpi_errno);
                 }
             }
+#endif /* TODU */
         }
         /* ... then wait for *all* of them to finish: */
         mpi_errno = MPIC_Waitall(reqs, reqarray, starray, errflag);
         if (mpi_errno && mpi_errno != MPI_ERR_IN_STATUS)
             MPIR_ERR_POP(mpi_errno);
+#endif /* TODU_MOD */
         /* --BEGIN ERROR HANDLING-- */
         if (mpi_errno == MPI_ERR_IN_STATUS) {
             for (i = 0; i < reqs; i++) {

@@ -78,9 +78,6 @@ int MPII_init_local_proc_attrs(int *p_thread_required)
 
     /* Set the number of tag bits. The device may override this value. */
     MPIR_Process.tag_bits = MPIR_TAG_BITS_DEFAULT;
-#ifdef UTF_DEBUG_20201229
-    fprintf(stderr, "%s: MPIR_Process.tag_bits = %d\n", __func__, MPIR_Process.tag_bits);
-#endif
 
     return mpi_errno;
 }

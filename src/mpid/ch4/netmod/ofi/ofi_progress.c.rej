@@ -1,0 +1,11 @@
+--- src/mpid/ch4/netmod/ofi/ofi_progress.c
++++ src/mpid/ch4/netmod/ofi/ofi_progress.c
+@@ -72,7 +72,7 @@ int MPIDI_OFI_progress(int vci, int blocking)
+         mpi_errno = MPIDI_OFI_handle_cq_entries(wc, 1);
+     else if (likely(1)) {
+         ret = fi_cq_read(MPIDI_OFI_global.ctx[vni].cq, (void *) wc, MPIDI_OFI_NUM_CQ_ENTRIES);
+-
++	//fprintf(stderr, "%s ret = %ld\n", __func__, ret); fflush(stderr);
+         if (likely(ret > 0))
+             mpi_errno = MPIDI_OFI_handle_cq_entries(wc, ret);
+         else if (ret == -FI_EAGAIN)
